@@ -1,5 +1,7 @@
 package com.example.springapi.controller;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.springapi.model.Produto;
 import com.example.springapi.service.IProdutoServico;
 
 @RestController
@@ -30,5 +35,13 @@ public class APIProdutoController {
     public ResponseEntity<Object> consultaTodos() {
         logger.info(">>>>>> apicontroller consulta todos");
         return ResponseEntity.status(HttpStatus.OK).body(produtoServico.consultaCatalogo());
+    }
+
+    @CrossOrigin
+    @PostMapping
+    public ResponseEntity<Object> cadastraProduto(@RequestBody Produto p) {
+        logger.info(">>>>>> apicontroller cadastrar produto iniciado");
+        Optional<Produto> produto = produtoServico.cadastrar(p);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produto.get());
     }
 }
