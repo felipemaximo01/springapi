@@ -1,5 +1,6 @@
 package com.example.springapi.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.springapi.model.Catalogo;
 import com.example.springapi.model.IProdutoRepository;
+import com.example.springapi.model.Imagem;
 import com.example.springapi.model.Produto;
 
 @Service
@@ -17,11 +20,26 @@ public class ProdutoServico implements IProdutoServico {
 
     Logger logger = LogManager.getLogger(this.getClass());
     @Autowired
-    IProdutoRepository repository;
+    IProdutoRepository produtoRepository;
+    @Autowired
+    IImagemServico imagemServico;
 
     @Override
-    public List<Produto> consultaCatalogo() {
-        return repository.findAll();
+    public List<Catalogo> consultaCatalogo() {
+        Catalogo c = null;
+        List<Catalogo> lista = new ArrayList<Catalogo>();
+        List<Produto> listaP = produtoRepository.findAll();
+        List<Imagem> listaI = imagemServico.getAll();
+        for (Produto p : listaP) {
+            for (Imagem i : listaI) {
+                if (p.getId().equals(i.getId())) {
+                    c = new Catalogo(p.getId(), p.getDescricao(), p.getCategoria(),
+                            p.getCusto(), p.getQuantidadeNoEstoque(), i.getArquivo());
+                    lista.add(c);
+                }
+            }
+        }
+        return lista;
     }
 
     @Override
